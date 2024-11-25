@@ -10,7 +10,7 @@ import Medecine from "./components/Meds/Medecine";
 import AppNavbar from "./components/AppBar";
 import CompletedOrder from "./components/Orders/Completed";
 import InprogressOrder from "./components/Orders/Inprogress";
-import Dashboard from "./components/PharmacyUser/Dashboard";
+import Report from "./components/PharmacyUser/Report";
 import MedsStock from "./components/PharmacyUser/Stock";
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
         <Route path="/Medecine" element={<Medecine />} />
         <Route path="/Completed" element={<CompletedOrder />} />
         <Route path="/Inprogress" element={<InprogressOrder />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/Report" element={<Report />} />
         <Route path="/Stock" element={<MedsStock />} />
       </Routes>
     </Router>

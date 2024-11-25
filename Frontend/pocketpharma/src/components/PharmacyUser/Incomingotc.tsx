@@ -1,33 +1,14 @@
-import React from "react";
-import { useState } from "react";
 import ResponsiveDrawer from "./ResponsiveDrawer";
 import AppNavbar from "./AppBarP";
 import "../../index.css";
-import {
-  Container,
-  Box,
-  Button,
-  InputAdornment,
-  MenuItem,
-  Card,
-} from "@mui/material";
-import {
-  FormControl,
-  TextField,
-  InputLabel,
-  Select,
-  Typography,
-  CardContent,
-  CardMedia,
-} from "@mui/material";
+import { Container, Box, Button, InputAdornment, Card } from "@mui/material";
+import { TextField, Typography, CardContent, CardMedia } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 export default function MedsStock() {
   const handleChange = (value: string | null | undefined) => {
     console.log(value);
   };
-
-  const [filter, setFilter] = useState<string>("");
 
   return (
     <>

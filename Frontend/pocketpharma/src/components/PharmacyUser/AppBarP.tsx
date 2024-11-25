@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, Box, Tabs, Tab } from "@mui/material";
+import React from "react";
+import { AppBar, Toolbar, Box } from "@mui/material";
 import { TextField, InputAdornment, Button } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { Icon } from "@iconify/react";
 
 function AppNavbar() {
-  const [value, setValue] = useState(0);
   const handleChange = (value: string | null | undefined) => {
     console.log(value);
   };

@@ -13,6 +13,8 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
+import { useMutation } from "@apollo/client";
+import { REGISTER_USER } from "../graphql/mutations";
 import { GoogleIcon, FacebookIcon } from "./CustomIcons";
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -49,6 +51,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignUp() {
+  const [registerUser, { loading, error }] = useMutation(REGISTER_USER);
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
@@ -93,15 +96,24 @@ export default function SignUp() {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (validateInputs()) {
       const data = new FormData(event.currentTarget);
-      console.log({
-        name: data.get("name"),
-        email: data.get("email"),
-        password: data.get("password"),
-      });
+
+      try {
+        await registerUser({
+          variables: {
+            name: data.get("name") as string,
+            email: data.get("email") as string,
+            password: data.get("password") as string,
+            role: "PATIENT", // Assign the "PATIENT" role automatically
+          },
+        });
+        // Navigate or handle success as necessary
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -178,9 +190,15 @@ export default function SignUp() {
               control={<Checkbox value="allowExtraEmails" color="primary" />}
               label="I want to receive updates via email."
             />
-            <Button type="submit" fullWidth variant="contained">
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+            >
               Sign up
             </Button>
+            {error && <Typography color="error">{error.message}</Typography>}
             <Typography sx={{ textAlign: "center" }}>
               Already have an account?{" "}
               <Link href="/sign-in" variant="body2">

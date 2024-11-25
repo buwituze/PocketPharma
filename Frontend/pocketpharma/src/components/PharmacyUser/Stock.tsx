@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ResponsiveDrawer from "./ResponsiveDrawer";
 import AppNavbar from "./AppBarP";
 import {
-  Container,
   Box,
   Button,
   InputAdornment,
@@ -288,12 +287,15 @@ export default function MedsStock() {
                     <input
                       type="file"
                       hidden
-                      onChange={(e) =>
-                        setNewMedicine({
-                          ...newMedicine,
-                          image: URL.createObjectURL(e.target.files[0]),
-                        })
-                      }
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setNewMedicine({
+                            ...newMedicine,
+                            image: URL.createObjectURL(file),
+                          });
+                        }
+                      }}
                     />
                   </Button>
                 </Grid>

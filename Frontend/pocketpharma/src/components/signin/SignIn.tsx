@@ -1,32 +1,31 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import CssBaseline from "@mui/material/CssBaseline";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Divider from "@mui/material/Divider";
-import FormLabel from "@mui/material/FormLabel";
-import FormControl from "@mui/material/FormControl";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import MuiCard from "@mui/material/Card";
+import {
+  Box,
+  Button,
+  Checkbox,
+  CssBaseline,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Link,
+  TextField,
+  Typography,
+  Stack,
+  Divider,
+  Card as MuiCard,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ForgotPassword from "./ForgotPassword";
 import { GoogleIcon, FacebookIcon } from "./CustomIcon";
 
+// Styled components
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignSelf: "center",
-  width: "100%",
   padding: theme.spacing(4),
   gap: theme.spacing(2),
-  margin: "auto",
-  [theme.breakpoints.up("sm")]: {
-    maxWidth: "450px",
-  },
+  maxWidth: 450,
   boxShadow:
     "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
   ...theme.applyStyles("dark", {
@@ -36,205 +35,125 @@ const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
-  height: "130vh",
-  minHeight: "100%",
+  minHeight: "100vh",
   padding: theme.spacing(2),
-  overflow: "auto",
-  [theme.breakpoints.up("sm")]: {
-    padding: theme.spacing(4),
-  },
-  "&::before": {
-    content: '""',
-    display: "block",
-    position: "absolute",
-    zIndex: -1,
-    inset: 0,
+  backgroundImage:
+    "radial-gradient(ellipse at center, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
+  ...theme.applyStyles("dark", {
     backgroundImage:
-      "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
-    backgroundRepeat: "no-repeat",
-    ...theme.applyStyles("dark", {
-      backgroundImage:
-        "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
-    }),
-  },
+      "radial-gradient(at center, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
+  }),
 }));
 
 export default function SignIn() {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
   const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [formErrors, setFormErrors] = React.useState({
+    email: "",
+    password: "",
+  });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
+    event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
 
-  const validateInputs = () => {
-    const email = document.getElementById("email") as HTMLInputElement;
-    const password = document.getElementById("password") as HTMLInputElement;
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage("");
+    let errors = { email: "", password: "" };
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Please enter a valid email address.";
     }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
+    if (!password || password.length < 6) {
+      errors.password = "Password must be at least 6 characters.";
     }
+    setFormErrors(errors);
 
-    return isValid;
+    if (!errors.email && !errors.password) {
+      console.log({ email, password });
+    }
   };
 
   return (
     <>
-      <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" justifyContent="space-between">
+      <CssBaseline />
+      <SignInContainer direction="column" justifyContent="center">
         <Card variant="outlined">
           <img
             src="/pocketpharmalogo2-removebg-preview.png"
-            alt=""
-            style={{
-              width: "150px",
-              height: "auto",
-              margin: "0",
-              display: "block",
-            }}
+            alt="Logo"
+            style={{ width: "150px", alignSelf: "center" }}
           />
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
+            align="center"
+            sx={{ fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
           >
             Sign in
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
+          <Box component="form" onSubmit={handleSubmit} sx={{ gap: 2 }}>
+            <FormControl fullWidth margin="normal">
+              <FormLabel>Email</FormLabel>
               <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                id="email"
-                type="email"
                 name="email"
                 placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
+                error={!!formErrors.email}
+                helperText={formErrors.email}
                 variant="outlined"
-                color={emailError ? "error" : "primary"}
-                sx={{ ariaLabel: "email" }}
               />
             </FormControl>
-            <FormControl>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <Link
-                  component="button"
-                  type="button"
-                  onClick={handleClickOpen}
-                  variant="body2"
-                  sx={{ alignSelf: "baseline" }}
-                >
-                  Forgot your password?
-                </Link>
-              </Box>
+            <FormControl fullWidth margin="normal">
+              <FormLabel>Password</FormLabel>
               <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
                 name="password"
-                placeholder="••••••"
                 type="password"
-                id="password"
-                autoComplete="current-password"
-                required
-                fullWidth
+                placeholder="••••••"
+                error={!!formErrors.password}
+                helperText={formErrors.password}
                 variant="outlined"
-                color={passwordError ? "error" : "primary"}
               />
+              <Link
+                component="button"
+                onClick={() => setOpen(true)}
+                variant="body2"
+                sx={{ mt: 1, textAlign: "right", display: "block" }}
+              >
+                Forgot your password?
+              </Link>
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox color="primary" />}
               label="Remember me"
             />
-            <ForgotPassword open={open} handleClose={handleClose} />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
               Sign in
             </Button>
-            <Typography sx={{ textAlign: "center" }}>
+            <Typography align="center" variant="body2" sx={{ mt: 1 }}>
               Don&apos;t have an account?{" "}
-              <span>
-                <Link
-                  href="/material-ui/getting-started/templates/sign-in/"
-                  variant="body2"
-                >
-                  Sign up
-                </Link>
-              </span>
+              <Link href="/signUp" variant="body2">
+                Sign up
+              </Link>
             </Typography>
           </Box>
-          <Divider>or</Divider>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Divider sx={{ my: 2 }}>or</Divider>
+          <Stack spacing={2}>
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => alert("Sign in with Google")}
               startIcon={<GoogleIcon />}
+              onClick={() => alert("Sign in with Google")}
             >
               Sign in with Google
             </Button>
             <Button
               fullWidth
               variant="outlined"
-              onClick={() => alert("Sign in with Facebook")}
               startIcon={<FacebookIcon />}
+              onClick={() => alert("Sign in with Facebook")}
             >
               Sign in with Facebook
             </Button>
-          </Box>
+          </Stack>
+          <ForgotPassword open={open} handleClose={() => setOpen(false)} />
         </Card>
       </SignInContainer>
     </>
