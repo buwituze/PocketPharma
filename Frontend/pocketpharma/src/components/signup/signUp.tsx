@@ -12,10 +12,12 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
 import { useMutation } from "@apollo/client";
 import { REGISTER_USER } from "../graphql/mutations";
 import { GoogleIcon, FacebookIcon } from "./CustomIcons";
+import { useNavigate } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -51,48 +53,87 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const [registerUser, { loading, error }] = useMutation(REGISTER_USER);
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [nameError, setNameError] = React.useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = React.useState("");
+  const [formErrors, setFormErrors] = React.useState({
+    emailError: false,
+    emailErrorMessage: "",
+    passwordError: false,
+    passwordErrorMessage: "",
+    firstNameError: false,
+    firstNameErrorMessage: "",
+    lastNameError: false,
+    lastNameErrorMessage: "",
+    usernameError: false,
+    usernameErrorMessage: "",
+    phoneNumberError: false,
+    phoneNumberErrorMessage: "",
+  });
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
     const password = document.getElementById("password") as HTMLInputElement;
-    const name = document.getElementById("name") as HTMLInputElement;
+    const firstName = document.getElementById("firstName") as HTMLInputElement;
+    const lastName = document.getElementById("lastName") as HTMLInputElement;
+    const username = document.getElementById("username") as HTMLInputElement;
+    const phoneNumber = document.getElementById(
+      "phoneNumber"
+    ) as HTMLInputElement;
 
     let isValid = true;
+    const newErrors = {
+      emailError: false,
+      emailErrorMessage: "",
+      passwordError: false,
+      passwordErrorMessage: "",
+      firstNameError: false,
+      firstNameErrorMessage: "",
+      lastNameError: false,
+      lastNameErrorMessage: "",
+      usernameError: false,
+      usernameErrorMessage: "",
+      phoneNumberError: false,
+      phoneNumberErrorMessage: "",
+    };
 
     if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
+      newErrors.emailError = true;
+      newErrors.emailErrorMessage = "Please enter a valid email address.";
       isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage("");
     }
 
     if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
+      newErrors.passwordError = true;
+      newErrors.passwordErrorMessage =
+        "Password must be at least 6 characters long.";
       isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
     }
 
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage("Name is required.");
+    if (!firstName.value) {
+      newErrors.firstNameError = true;
+      newErrors.firstNameErrorMessage = "First name is required.";
       isValid = false;
-    } else {
-      setNameError(false);
-      setNameErrorMessage("");
     }
 
+    if (!lastName.value) {
+      newErrors.lastNameError = true;
+      newErrors.lastNameErrorMessage = "Last name is required.";
+      isValid = false;
+    }
+
+    if (!username.value) {
+      newErrors.usernameError = true;
+      newErrors.usernameErrorMessage = "Username is required.";
+      isValid = false;
+    }
+
+    if (!phoneNumber.value || !/^\d+$/.test(phoneNumber.value)) {
+      newErrors.phoneNumberError = true;
+      newErrors.phoneNumberErrorMessage = "Please enter a valid phone number.";
+      isValid = false;
+    }
+
+    setFormErrors(newErrors);
     return isValid;
   };
 
@@ -104,13 +145,16 @@ export default function SignUp() {
       try {
         await registerUser({
           variables: {
-            name: data.get("name") as string,
+            firstName: data.get("firstName") as string,
+            lastName: data.get("lastName") as string,
+            username: data.get("username") as string,
             email: data.get("email") as string,
             password: data.get("password") as string,
-            role: "PATIENT", // Assign the "PATIENT" role automatically
+            phoneNumber: data.get("phoneNumber") as string,
+            role: "PATIENT",
           },
         });
-        // Navigate or handle success as necessary
+        navigate("/signIn"); // Redirect to sign-in page
       } catch (err) {
         console.error(err);
       }
@@ -144,52 +188,105 @@ export default function SignUp() {
             onSubmit={handleSubmit}
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
-            <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
-              <TextField
-                autoComplete="name"
-                name="name"
-                required
-                fullWidth
-                id="name"
-                placeholder="Jon Snow"
-                error={nameError}
-                helperText={nameErrorMessage}
-                color={nameError ? "error" : "primary"}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                placeholder="your@email.com"
-                name="email"
-                autoComplete="email"
-                error={emailError}
-                helperText={emailErrorMessage}
-                color={emailError ? "error" : "primary"}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                color={passwordError ? "error" : "primary"}
-              />
-            </FormControl>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="firstName">First Name</FormLabel>
+                  <TextField
+                    autoComplete="given-name"
+                    name="firstName"
+                    required
+                    id="firstName"
+                    placeholder="Jon"
+                    error={formErrors.firstNameError}
+                    helperText={formErrors.firstNameErrorMessage}
+                    color={formErrors.firstNameError ? "error" : "primary"}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="lastName">Last Name</FormLabel>
+                  <TextField
+                    autoComplete="family-name"
+                    name="lastName"
+                    required
+                    id="lastName"
+                    placeholder="Snow"
+                    error={formErrors.lastNameError}
+                    helperText={formErrors.lastNameErrorMessage}
+                    color={formErrors.lastNameError ? "error" : "primary"}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="username">Username</FormLabel>
+                  <TextField
+                    required
+                    id="username"
+                    placeholder="jonsnow"
+                    name="username"
+                    error={formErrors.usernameError}
+                    helperText={formErrors.usernameErrorMessage}
+                    color={formErrors.usernameError ? "error" : "primary"}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="phoneNumber">Phone Number</FormLabel>
+                  <TextField
+                    required
+                    id="phoneNumber"
+                    placeholder="1234567890"
+                    name="phoneNumber"
+                    error={formErrors.phoneNumberError}
+                    helperText={formErrors.phoneNumberErrorMessage}
+                    color={formErrors.phoneNumberError ? "error" : "primary"}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <TextField
+                    required
+                    id="email"
+                    placeholder="your@email.com"
+                    name="email"
+                    autoComplete="email"
+                    error={formErrors.emailError}
+                    helperText={formErrors.emailErrorMessage}
+                    color={formErrors.emailError ? "error" : "primary"}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <TextField
+                    required
+                    name="password"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                    error={formErrors.passwordError}
+                    helperText={formErrors.passwordErrorMessage}
+                    color={formErrors.passwordError ? "error" : "primary"}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+
             <FormControlLabel
               control={<Checkbox value="allowExtraEmails" color="primary" />}
               label="I want to receive updates via email."
             />
+
             <Button
               type="submit"
               fullWidth
@@ -198,7 +295,9 @@ export default function SignUp() {
             >
               Sign up
             </Button>
+
             {error && <Typography color="error">{error.message}</Typography>}
+
             <Typography sx={{ textAlign: "center" }}>
               Already have an account?{" "}
               <Link href="/sign-in" variant="body2">
@@ -206,6 +305,7 @@ export default function SignUp() {
               </Link>
             </Typography>
           </Box>
+
           <Divider>
             <Typography sx={{ color: "text.secondary" }}>or</Typography>
           </Divider>

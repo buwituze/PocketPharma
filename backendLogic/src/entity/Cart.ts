@@ -10,12 +10,10 @@ export class Cart {
   id?: number;
 
 
-  // Many carts can belong to one user
   @ManyToOne(() => User, (user) => user.carts, { nullable: false })
 user?: User;
 
 
-  // A cart can have multiple items
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart, { cascade: true })
   items?: CartItem[];
 

@@ -1,14 +1,14 @@
 import { gql } from "@apollo/client";
 
 export const GET_USERS = gql`
- query GetUser($getUserId: ID!) {
-  getUser(id: $getUserId) {
-    firstName
+ query GetUsers {
+  getUsers {
     email
+    firstName
     id
     lastName
-    licenseNumber
     nationalId
+    licenseNumber
     password
     phoneNumber
     role

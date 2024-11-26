@@ -13,15 +13,15 @@ async function startServer(): Promise<void> {
   try {
     await AppDataSource.initialize();
     console.log("Database connected!");
- 
+
     const app: Application = express();
-  
+
     app.use(
       cors({
         origin: "http://localhost:5173",
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type"],
-        credentials: true, 
+        credentials: true,
       })
     );
 
@@ -30,11 +30,11 @@ async function startServer(): Promise<void> {
       resolvers,
       persistedQueries: false,
       plugins: [
-        ApolloServerPluginLandingPageLocalDefault({ embed: true }), 
+        ApolloServerPluginLandingPageLocalDefault({ embed: true }),
       ],
       introspection: true,
       context: ({ req }) => {
-        
+
         return { request: req };
       },
     });

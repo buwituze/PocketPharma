@@ -12,6 +12,8 @@ import CompletedOrder from "./components/Orders/Completed";
 import InprogressOrder from "./components/Orders/Inprogress";
 import Report from "./components/PharmacyUser/Report";
 import MedsStock from "./components/PharmacyUser/Stock";
+import Dashboard from "./components/Dashboard";
+import AppNavAdmin from "./components/AppBarAdmin";
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
         <Route path="/Inprogress" element={<InprogressOrder />} />
         <Route path="/Report" element={<Report />} />
         <Route path="/Stock" element={<MedsStock />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
