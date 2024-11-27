@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery, gql } from "@apollo/client";
 import ResponsiveDrawer from "../DrawerResponsiveness";
 import AppNavbar from "../AppBar";
 import {
@@ -13,59 +14,91 @@ import {
   Select,
   Typography,
   CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  IconButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+export const GET_MEDICINES = gql`
+  query GetMedicines {
+    getMedicines {
+      id
+      name
+      description
+      category
+      picture
+      type
+      amount
+      sideEffects
+    }
+  }
+`;
 
 interface Medicine {
-  id: number;
-  image: string;
+  id: string;
   name: string;
   description: string;
   category: string;
+  picture: string | null;
+  type: string;
+  amount: number;
+  sideEffects: string;
 }
-
-const medicineData: Medicine[] = [
-  {
-    id: 1,
-    name: "Aspirin",
-    description: "Pain reliever",
-    category: "Over-The-Counter Medicine",
-    image: "https://example.com/aspirin.jpg",
-  },
-  {
-    id: 2,
-    name: "Ibuprofen",
-    description: "Anti-inflammatory",
-    category: "Over-The-Counter Medicine",
-    image: "https://example.com/ibuprofen.jpg",
-  },
-  {
-    id: 3,
-    name: "Metformin",
-    description: "Diabetes treatment",
-    category: "Prescription Medicine",
-    image: "https://example.com/metformin.jpg",
-  },
-  {
-    id: 4,
-    name: "Lipitor",
-    description: "Cholesterol control",
-    category: "Prescription Medicine",
-    image: "https://example.com/lipitor.jpg",
-  },
-];
 
 export default function Medicine() {
   const [filter, setFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
+    null
+  );
+  const [open, setOpen] = useState(false);
 
-  const filteredData = medicineData.filter((medicine) => {
-    const matchesCategory = filter === "ALL" || medicine.category === filter;
+  const { data, loading, error } = useQuery(GET_MEDICINES);
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (error) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
+
+  const medicines: Medicine[] = data.getMedicines;
+
+  const filteredData = medicines.filter((medicine) => {
+    const matchesCategory =
+      filter === "ALL" ||
+      (filter === "OTC" && medicine.type === "OTC") ||
+      (filter === "PRESCRIPTION" && medicine.type === "PRESCRIPTION");
     const matchesSearch = medicine.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const handleLearnMore = (medicine: Medicine) => {
+    setSelectedMedicine(medicine);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedMedicine(null);
+  };
+
+  const handleAddToCart = (medicine: Medicine) => {
+    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const updatedCart = [...existingCart, medicine];
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    toast.success("Product added to cart!");
+  };
 
   return (
     <>
@@ -81,7 +114,7 @@ export default function Medicine() {
           margin: "8rem 0rem 3rem 21rem",
         }}
       >
-        <Typography variant="h5" component="h6" sx={{}}>
+        <Typography variant="h5" component="h6">
           Medicine List
         </Typography>
         <Box
@@ -91,13 +124,12 @@ export default function Medicine() {
             justifyContent: "right",
             gap: "16px",
             mr: 5,
-            // margin: "8rem 0rem 0 0rem",
           }}
         >
           <Box sx={{ display: "flex", gap: "16px" }}>
             <TextField
               variant="outlined"
-              placeholder="Search Medecine..."
+              placeholder="Search Medicine..."
               size="small"
               sx={{
                 width: "300px",
@@ -149,12 +181,8 @@ export default function Medicine() {
                 onChange={(event) => setFilter(event.target.value)}
               >
                 <MenuItem value="ALL">ALL</MenuItem>
-                <MenuItem value="Over-The-Counter Medicine">
-                  Over-The-Counter Medicine
-                </MenuItem>
-                <MenuItem value="Prescription Medicine">
-                  Prescription Medicine
-                </MenuItem>
+                <MenuItem value="OTC">Over-The-Counter Medicine</MenuItem>
+                <MenuItem value="PRESCRIPTION">Prescription Medicine</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -178,6 +206,7 @@ export default function Medicine() {
                 key={medicine.id}
                 sx={{
                   width: "300px",
+                  height: "340px",
                   boxShadow: "none",
                   borderRadius: "10px",
                   border: "1px solid #E9EAEC",
@@ -185,7 +214,7 @@ export default function Medicine() {
               >
                 <Box
                   component="img"
-                  src={medicine.image}
+                  src={medicine.picture ?? "https://via.placeholder.com/150"}
                   alt={medicine.name}
                   sx={{
                     width: "100%",
@@ -194,27 +223,47 @@ export default function Medicine() {
                     borderTopLeftRadius: "4px",
                     borderTopRightRadius: "4px",
                   }}
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://media.istockphoto.com/id/1220591958/vector/medicine.jpg?s=612x612&w=0&k=20&c=5zy2UM6JexVPpiOBOwnhGLkCyxwy_pal6-7-6N22TZU=";
+                  }}
                 />
                 <CardContent>
                   <Typography variant="h6">{medicine.name}</Typography>
                   <Typography variant="body2" sx={{ color: "gray" }}>
                     {medicine.description}
                   </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                    Amount: {medicine.amount} RWF
+                  </Typography>
                 </CardContent>
                 <Box
                   sx={{
+                    mt: 2,
+                    mb: 2,
                     display: "flex",
-                    gap: "1rem",
-                    // justifyContent: "space-between",
                     p: 2,
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    // position: "fixed",
+                    // bottom: "-13px",
                   }}
                 >
-                  <Button size="small" variant="contained" color="primary">
-                    Order
-                  </Button>
-                  <Button size="small" variant="outlined">
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleLearnMore(medicine)}
+                    sx={{ borderRadius: "10px", height: "35px" }}
+                  >
                     Learn More
                   </Button>
+                  <IconButton
+                    color="success"
+                    onClick={() => handleAddToCart(medicine)}
+                    sx={{ mt: -0.5 }}
+                  >
+                    <ShoppingCartIcon />
+                  </IconButton>
                 </Box>
               </Card>
             ))}
@@ -224,6 +273,42 @@ export default function Medicine() {
           )}
         </Box>
       </Box>
+
+      {/* Learn More Dialog */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{selectedMedicine?.name}</DialogTitle>
+        <DialogContent>
+          <Box
+            component="img"
+            src={selectedMedicine?.picture ?? "https://via.placeholder.com/150"}
+            alt={selectedMedicine?.name}
+            sx={{
+              width: "100%",
+              height: "200px",
+              objectFit: "cover",
+              mb: 2,
+            }}
+            onError={(e) => {
+              e.currentTarget.src = "https://via.placeholder.com/150";
+            }}
+          />
+          <DialogContentText>{selectedMedicine?.description}</DialogContentText>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            Category: {selectedMedicine?.category}
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            Side Effects: {selectedMedicine?.sideEffects}
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold" }}>
+            Amount: ${selectedMedicine?.amount}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      <ToastContainer />
     </>
   );
 }

@@ -16,3 +16,32 @@ export const GET_USERS = gql`
   }
 }
 `;
+export const GET_MEDICINES = gql`
+query GetMedicines {
+  getMedicines {
+    amount
+    category
+    name
+    id
+    description
+    picture
+    sideEffects
+    type
+  }
+}
+`;
+
+export const GET_MEDICINE = gql`
+ query GetMedicine($getMedicineId: ID!) {
+  getMedicine(id: $getMedicineId) {
+    amount
+    category
+    description
+    id
+    name
+    picture
+    sideEffects
+    type
+  }
+}
+`;

@@ -14,6 +14,8 @@ import Report from "./components/PharmacyUser/Report";
 import MedsStock from "./components/PharmacyUser/Stock";
 import Dashboard from "./components/Dashboard";
 import AppNavAdmin from "./components/AppBarAdmin";
+import Cart from "./components/Cart";
+import CheckOut from "./components/Checkout";
 
 function App() {
   return (
@@ -33,6 +35,9 @@ function App() {
         <Route path="/Report" element={<Report />} />
         <Route path="/Stock" element={<MedsStock />} />
         <Route path="/Dashboard" element={<Dashboard />} />
+        <Route path="/AppNavAdmin" element={<AppNavAdmin />} />
+        <Route path="/Cart" element={<Cart />} />
+        <Route path="/CheckOut" element={<CheckOut />} />
       </Routes>
     </Router>
   );

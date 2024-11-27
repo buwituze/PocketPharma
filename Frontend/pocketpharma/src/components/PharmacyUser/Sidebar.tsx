@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react";
 
 const menuItems = [
   {
-    path: "/#",
+    path: "/report",
     icon: (
       <Icon
         icon="material-symbols-light:dashboard-outline"
@@ -15,7 +15,23 @@ const menuItems = [
         height="1.8rem"
       />
     ),
-    name: "Reports",
+    name: "Report",
+  },
+  {
+    path: "/stock",
+    icon: <Icon icon="clarity:storage-line" width="1.5rem" height="1.5rem" />,
+    name: "Stock",
+  },
+  {
+    path: "/#",
+    icon: (
+      <Icon
+        icon="healthicons:insurance-card-outline"
+        width="1.5rem"
+        height="1.5rem"
+      />
+    ),
+    name: "Insurance",
   },
   {
     path: "/#",
@@ -26,11 +42,7 @@ const menuItems = [
       { path: "/#", name: "Prescription Drugs" },
     ],
   },
-  {
-    path: "/#",
-    icon: <Icon icon="clarity:storage-line" width="1.5rem" height="1.5rem" />,
-    name: "Stock",
-  },
+
   {
     path: "/#",
     icon: <Icon icon="carbon:star-review" width="1.5rem" height="1.5rem" />,
