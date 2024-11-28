@@ -17,7 +17,6 @@ import {
   TextField,
   Select,
   MenuItem,
-  useTheme,
   Snackbar,
   InputAdornment,
 } from "@mui/material";
@@ -40,8 +39,7 @@ type User = {
 };
 
 export default function Dashboard() {
-  const theme = useTheme();
-  const { data, refetch } = useQuery(GET_USERS, {
+  const { data } = useQuery(GET_USERS, {
     fetchPolicy: "network-only",
   });
 

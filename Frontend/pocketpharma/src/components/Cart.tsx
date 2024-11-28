@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
   CardContent,
   Typography,
   IconButton,
-  Divider,
   Link,
   Button,
 } from "@mui/material";
@@ -13,7 +12,6 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AppBar from "./AppBar";
 import ResponsiveDrawer from "./DrawerResponsiveness";
-import { useBackgroundQuery } from "@apollo/client";
 
 interface Medicine {
   id: string;
