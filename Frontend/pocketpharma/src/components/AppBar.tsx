@@ -8,6 +8,7 @@ import {
   MenuItem,
   Typography,
   Popover,
+  Link,
 } from "@mui/material";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -20,9 +21,11 @@ import "react-toastify/dist/ReactToastify.css";
 
 function AppNavbar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [settingsEl, setSettingsEl] = useState<null | HTMLElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [openPopover, setOpenPopover] = useState(false);
   const open = Boolean(anchorEl);
+  const settingsOpen = Boolean(settingsEl);
 
   const { data } = useQuery(GET_USERS);
   const userName = data?.getUsers[0]?.firstName ?? "P";
@@ -33,6 +36,31 @@ function AppNavbar() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleSettingsOpen = (event: React.MouseEvent<any>) => {
+    setSettingsEl(event.currentTarget);
+  };
+
+  const handleSettingsClose = () => {
+    setSettingsEl(null);
+  };
+
+  const handleNavigate = (role: string) => {
+    switch (role) {
+      case "patient":
+        window.location.href = "/pharmacy";
+        break;
+      case "pharmacy":
+        window.location.href = "/report";
+        break;
+      case "admin":
+        window.location.href = "/dashboard";
+        break;
+      default:
+        break;
+    }
+    handleSettingsClose();
   };
 
   const handlePopoverOpen = () => {
@@ -51,7 +79,7 @@ function AppNavbar() {
 
   const handleUpload = () => {
     if (!file) {
-      toast.error("Upload Failed. Please Rreview instructions.");
+      toast.error("Upload Failed. Please review instructions.");
       return;
     }
     toast.success("Prescription uploaded successfully!");
@@ -84,14 +112,13 @@ function AppNavbar() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: "74%",
+              gap: "60%",
             }}
           >
             <Box>
               <TextField
                 variant="outlined"
                 placeholder="Search Stock..."
-                onChange={(e) => console.log(e.target.value)}
                 size="small"
                 sx={{
                   width: "400px",
@@ -124,15 +151,47 @@ function AppNavbar() {
                 display: "flex",
                 alignItems: "center",
                 color: "black",
-                gap: { xs: 0.5, sm: 1.3, md: 3, lg: 3.4 },
+                gap: { xs: 0.5, sm: 1.3, md: 3, lg: 3 },
               }}
             >
-              <Icon icon="bx:cart" width="1.7rem" height="1.7rem" />
+              <Icon
+                icon="rivet-icons:settings"
+                width="1.7rem"
+                height="1.7rem"
+                color="#525151"
+                onClick={handleSettingsOpen}
+                style={{ cursor: "pointer" }}
+              />
+              <Link href="/Cart">
+                <Icon
+                  icon="bx:cart"
+                  width="1.9rem"
+                  height="1.9rem"
+                  style={{ color: "black" }}
+                />
+              </Link>
               <Icon
                 icon="hugeicons:notification-01"
                 width="1.7rem"
                 height="1.7rem"
               />
+
+              <Menu
+                anchorEl={settingsEl}
+                open={settingsOpen}
+                onClose={handleSettingsClose}
+                sx={{ mt: 1.3 }}
+              >
+                <MenuItem onClick={() => handleNavigate("patient")}>
+                  Patient
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigate("pharmacy")}>
+                  Pharmacy
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigate("admin")}>
+                  Admin
+                </MenuItem>
+              </Menu>
 
               <Box
                 sx={{

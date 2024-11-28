@@ -126,12 +126,12 @@ export default function DrawerComponent({ isOpen, toggleDrawer }: DrawerProps) {
             }}
           >
             <img
-              src="/logo.png"
+              src="/lightlogofull-removebg-preview.png"
               alt="SokoFund"
               style={{
                 // backgroundColor: "#1F2937",
-                height: "50px",
-                width: "160px",
+                height: "80px",
+                width: "185px",
                 transition: "width 0.3s ease",
               }}
             />

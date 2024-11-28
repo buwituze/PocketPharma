@@ -28,9 +28,9 @@ function Navbar() {
               }}
             >
               <img
-                src="/pocketpharmalogo2-removebg-preview.png"
+                src="/pocketpharmalogo-removebg-preview.png"
                 alt="Logo"
-                style={{ height: "65px", width: "250px" }}
+                style={{ height: "75px", width: "250px" }}
               />
             </Box>
 

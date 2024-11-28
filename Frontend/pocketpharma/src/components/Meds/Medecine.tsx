@@ -239,8 +239,8 @@ export default function Medicine() {
                 </CardContent>
                 <Box
                   sx={{
-                    mt: 2,
-                    mb: 2,
+                    // mt: 2,
+                    // mb: 2,
                     display: "flex",
                     p: 2,
                     justifyContent: "space-between",

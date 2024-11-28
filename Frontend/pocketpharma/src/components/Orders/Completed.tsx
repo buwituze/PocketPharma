@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import ResponsiveDrawer from "../DrawerResponsiveness";
 import AppNavbar from "../AppBar";
 import "../../index.css";
@@ -9,107 +10,44 @@ import {
   Typography,
   Modal,
   Rating,
+  Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import Paper from "@mui/material/Paper";
 import { Icon } from "@iconify/react";
-import { useState, useMemo } from "react";
 
 export default function CompletedOrder() {
-  const initialColumns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "medecineName", headerName: "Medicine", width: 160 },
-    { field: "category", headerName: "Category", width: 160 },
-    {
-      field: "amount",
-      headerName: "Amount",
-      type: "string",
-      width: 130,
-    },
-    {
-      field: "pharmacy",
-      headerName: "Pharmacy",
-      type: "string",
-      width: 190,
-    },
-    {
-      field: "action",
-      headerName: "Actions",
-      width: 190,
-      renderCell: (params: any) => {
-        return (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.5rem",
-              marginTop: "1rem",
-            }}
-          >
-            <Button
-              variant="contained"
-              sx={{
-                width: "70px",
-                height: "30px",
-                mr: "1rem",
-                backgroundColor: "#00072d",
-                color: "white",
-                boxShadow: "none",
-              }}
-              onClick={() => handleRateClick(params.row.pharmacy)}
-            >
-              Rate
-            </Button>
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [currentRating, setCurrentRating] = useState<number | null>(null);
+  const [reviewText, setReviewText] = useState("");
+  const [currentPharmacy, setCurrentPharmacy] = useState<string>("");
+  const [completedOrders, setCompletedOrders] = useState<any[]>([]);
 
-            <Icon
-              icon="fluent:call-20-regular"
-              width="1.5rem"
-              height="1.5rem"
-              color="blue"
-            />
-            <Icon
-              icon="material-symbols-light:delete-outline"
-              width="1.5rem"
-              height="1.5rem"
-              color="red"
-            />
-          </div>
-        );
-      },
-    },
-  ];
+  useEffect(() => {
+    const storedCompletedOrders = JSON.parse(
+      localStorage.getItem("completedOrders") || "[]"
+    );
 
-  const rows = [
-    {
-      id: 1,
-      medecineName: "Snow",
-      category: "Jon",
-      amount: "500 rwf",
-      pharmacy: "Snow Pharmacy",
-    },
-    {
-      id: 2,
-      medecineName: "Lannister",
-      category: "Cersei",
-      amount: "200 rwf",
-      pharmacy: "Lannister Pharmacy",
-    },
-  ];
+    // Assign unique IDs to each order if not already present.
+    const ordersWithIds = storedCompletedOrders.map(
+      (order: any, index: number) => ({
+        ...order,
+        id: order.id || index + 1, // Use existing id or fallback to index-based id.
+      })
+    );
 
-  const paginationModel = { page: 0, pageSize: 5 };
+    setCompletedOrders(ordersWithIds);
+  }, []);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value.toLowerCase());
+  };
 
   const handleRateClick = (pharmacyName: string) => {
     setCurrentPharmacy(pharmacyName);
     setModalOpen(true);
   };
-  const [_, setSelectedRows] = useState([]);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [currentRating, setCurrentRating] = useState<number | null>(null);
-  const [reviewText, setReviewText] = useState("");
-  const [currentPharmacy, setCurrentPharmacy] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleModalClose = () => {
     setModalOpen(false);
@@ -125,148 +63,129 @@ export default function CompletedOrder() {
     handleModalClose();
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value.toLowerCase());
+  const handleDeleteOrder = (orderId: number) => {
+    const updatedOrders = completedOrders.filter(
+      (order) => order.id !== orderId
+    );
+    localStorage.setItem("completedOrders", JSON.stringify(updatedOrders));
+    setCompletedOrders(updatedOrders);
   };
 
-  const filteredRows = rows.filter(
-    (row) =>
-      row.medecineName.toLowerCase().includes(searchQuery) ||
-      row.category.toLowerCase().includes(searchQuery) ||
-      row.amount.toLowerCase().includes(searchQuery) ||
-      row.pharmacy.toLowerCase().includes(searchQuery)
+  const filteredRows = completedOrders.filter((row) =>
+    Object.values(row).join(" ").toLowerCase().includes(searchQuery)
   );
 
-  const columns = useMemo(() => {
-    const columnsWithActions = [...initialColumns];
-    columnsWithActions.forEach((col) => {
-      if (col.field === "action") {
-        col.renderCell = (params: any) => {
-          return (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.5rem",
-                marginTop: "1rem",
-              }}
-            >
-              <Button
-                variant="contained"
-                sx={{
-                  width: "70px",
-                  height: "30px",
-                  mr: "1rem",
-                  backgroundColor: "#00072d",
-                  color: "white",
-                  boxShadow: "none",
-                }}
-                onClick={() => handleRateClick(params.row.pharmacy)}
-              >
-                Rate
-              </Button>
-
-              <Icon
-                icon="fluent:call-20-regular"
-                width="1.5rem"
-                height="1.5rem"
-                color="blue"
-              />
-              <Icon
-                icon="material-symbols-light:delete-outline"
-                width="1.5rem"
-                height="1.5rem"
-                color="red"
-              />
-            </div>
-          );
-        };
-      }
-    });
-    return columnsWithActions;
-  }, []);
-
-  const handleSelectionChange = (newSelection: any) => {
-    setSelectedRows(newSelection);
-  };
+  const columns: GridColDef[] = [
+    { field: "name", headerName: "Medicine Name", width: 200 },
+    { field: "category", headerName: "Category", width: 160 },
+    { field: "amount", headerName: "Amount", width: 130 },
+    { field: "pharmacy", headerName: "Pharmacy", width: 190 },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 100,
+      renderCell: () => (
+        <Icon
+          icon="material-symbols-check-circle-outline"
+          color="green"
+          width="1.5rem"
+        />
+      ),
+    },
+    {
+      field: "action",
+      headerName: "Actions",
+      width: 250,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Button
+            variant="contained"
+            sx={{
+              width: "70px",
+              backgroundColor: "#00072d",
+              color: "white",
+              boxShadow: "none",
+              height: "30px",
+              mt: 1,
+            }}
+            onClick={() => handleRateClick(params.row.pharmacy)}
+          >
+            Rate
+          </Button>
+          {/* <span title="0798426485">
+            <Icon
+              icon="fluent:call-20-regular"
+              width="1.5rem"
+              color="blue"
+              style={{ cursor: "pointer" }}
+            />
+          </span> */}
+          <Icon
+            icon="material-symbols-light:delete-outline"
+            width="1.5rem"
+            color="red"
+            style={{ cursor: "pointer" }}
+            onClick={() => handleDeleteOrder(params.row.id)}
+          />
+        </Box>
+      ),
+    },
+  ];
 
   return (
     <>
       <ResponsiveDrawer />
       <AppNavbar />
-
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           gap: "2rem",
-          marginLeft: "16rem",
-          mt: "4rem",
+          ml: "16rem",
+          mt: "7rem",
         }}
       >
-        <Typography
-          variant="h5"
-          component="h6"
-          sx={{ marginTop: "2rem", textAlign: "center" }}
-        >
+        <Typography variant="h5" sx={{ textAlign: "center" }}>
           Completed Orders
         </Typography>
-
-        <Box>
-          <TextField
-            variant="outlined"
-            placeholder="Search..."
-            size="small"
-            sx={{
-              width: "300px",
-              height: "43px",
-              paddingTop: "4px",
-              ml: 5,
-              backgroundColor: "white",
-              borderRadius: "100px",
-              "& .MuiOutlinedInput-root": {
-                "& input": { color: "black" },
-                "& input::placeholder": { color: "#A0AEC0" },
-                "& fieldset": {
-                  borderColor: "#A0AEC0",
-                  borderRadius: "100px",
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "black" }} />
-                </InputAdornment>
-              ),
-            }}
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-        </Box>
-
+        <TextField
+          variant="outlined"
+          placeholder="Search..."
+          size="small"
+          sx={{
+            width: "300px",
+            ml: 5,
+            backgroundColor: "white",
+            borderRadius: "20px",
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: "black" }} />
+              </InputAdornment>
+            ),
+          }}
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
         <Paper sx={{ height: "auto", width: "95%", ml: "2rem" }}>
           <DataGrid
             rows={filteredRows}
             columns={columns}
-            initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
-            onRowSelectionModelChange={(newSelection: any) =>
-              handleSelectionChange(newSelection)
-            }
             sx={{ border: 0 }}
           />
         </Paper>
       </Box>
-
-      <Modal
-        open={isModalOpen}
-        onClose={handleModalClose}
-        aria-labelledby="rate-and-review"
-        aria-describedby="rate-and-review-description"
-      >
+      <Modal open={isModalOpen} onClose={handleModalClose}>
         <Box
           sx={{
             position: "absolute",
@@ -280,16 +199,15 @@ export default function CompletedOrder() {
             borderRadius: 2,
           }}
         >
-          <Typography id="rate-and-review" variant="h6" component="h2">
+          <Typography variant="h6" sx={{ height: "20px" }}>
             Rate {currentPharmacy}
           </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Rating
-              value={currentRating}
-              onChange={(_, newValue) => setCurrentRating(newValue)}
-              precision={0.5}
-            />
-          </Box>
+          <Rating
+            value={currentRating}
+            onChange={(_, newValue) => setCurrentRating(newValue)}
+            precision={0.5}
+            sx={{ mt: 2 }}
+          />
           <TextField
             multiline
             rows={4}
@@ -313,7 +231,7 @@ export default function CompletedOrder() {
               variant="contained"
               color="primary"
             >
-              Add
+              Submit
             </Button>
           </Box>
         </Box>

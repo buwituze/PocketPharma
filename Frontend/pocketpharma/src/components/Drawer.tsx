@@ -25,12 +25,12 @@ const menuItems = [
     name: "Medecine",
   },
   {
-    path: "/#",
+    path: "",
     icon: <Icon icon="tabler:calendar" width="1.5rem" height="1.5rem" />,
     name: "Order History",
     children: [
       { path: "/Completed", name: "Completed" },
-      { path: "/Inprogress", name: "Ongoing" },
+      { path: "/Inprogress", name: "In-Progress" },
     ],
   },
 ];
@@ -111,12 +111,12 @@ export default function DrawerComponent({ isOpen, toggleDrawer }: DrawerProps) {
             }}
           >
             <img
-              src="/logo.png"
+              src="/lightlogofull-removebg-preview.png"
               alt="SokoFund"
               style={{
                 // backgroundColor: "#1F2937",
-                height: "50px",
-                width: "160px",
+                height: "80px",
+                width: "185px",
                 transition: "width 0.3s ease",
               }}
             />

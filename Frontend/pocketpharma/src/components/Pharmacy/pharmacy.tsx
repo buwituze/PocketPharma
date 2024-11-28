@@ -142,7 +142,7 @@ export default function Pharmacy() {
             <Card key={pharmacy.id} sx={{ width: "300px" }}>
               <Box
                 component="img"
-                src="https://via.placeholder.com/300x150"
+                src="https://img.freepik.com/premium-vector/pharmacy-building-line-medicine-concept-illustration_501173-512.jpg"
                 alt={pharmacy.firstName}
                 sx={{
                   width: "100%",

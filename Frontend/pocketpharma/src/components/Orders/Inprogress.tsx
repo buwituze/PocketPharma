@@ -35,7 +35,6 @@ export default function InprogressOrder() {
 
     setOrders(initializedOrders);
 
-    // Simulate status update to "Pending to Approval"
     setTimeout(() => {
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
@@ -51,7 +50,10 @@ export default function InprogressOrder() {
     setSearchQuery(event.target.value);
   };
 
-  const handleCallClick = (event: React.MouseEvent<unknown>, phone: string) => {
+  const handleCallClick = (
+    event: React.MouseEvent<unknown>,
+    phone: "0798564453"
+  ) => {
     setAnchorEl(event.currentTarget as HTMLElement);
     setPhone(phone);
   };

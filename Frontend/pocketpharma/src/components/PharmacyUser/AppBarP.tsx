@@ -6,8 +6,11 @@ import {
   Menu,
   MenuItem,
   Typography,
+  Popover,
+  List,
+  Button,
 } from "@mui/material";
-import { TextField, InputAdornment, Button } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { Icon } from "@iconify/react";
@@ -16,11 +19,12 @@ import { GET_USERS } from "../graphql/queries";
 
 function AppNavbar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [roleAnchorEl, setRoleAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const roleOpen = Boolean(roleAnchorEl);
 
-  // Query to fetch user data (assuming you're fetching only the first user for simplicity)
   const { data } = useQuery(GET_USERS);
-  const userName = data?.getUsers[0]?.firstName ?? "P"; // Default to "User" if no data
+  const userName = data?.getUsers[0]?.firstName ?? "P";
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -30,9 +34,26 @@ function AppNavbar() {
     setAnchorEl(null);
   };
 
+  const handleSettingsOpen = (event: React.MouseEvent<any>) => {
+    setRoleAnchorEl(event.currentTarget);
+  };
+
+  const handleRoleClose = () => {
+    setRoleAnchorEl(null);
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Remove the auth token
-    window.location.href = "/signIn"; // Redirect to sign-in page
+    localStorage.removeItem("authToken");
+    window.location.href = "/signIn";
+  };
+
+  const handleNavigate = (role: string) => {
+    const routes: { [key: string]: string } = {
+      Patient: "/pharmacy",
+      Pharmacy: "/report",
+      Admin: "/dashboard",
+    };
+    window.location.href = routes[role];
   };
 
   return (
@@ -93,23 +114,34 @@ function AppNavbar() {
               }}
             />
 
-            {/* Right side icons and user dropdown */}
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
                 color: "black",
-                gap: { xs: 0.5, sm: 1.3, md: 3 },
+                gap: { xs: 0.5, sm: 1.3, md: 3, lg: 3 },
               }}
             >
-              <Icon icon="bx:cart" width="1.7rem" height="1.7rem" />
+              <Icon
+                icon="rivet-icons:settings"
+                width="1.7rem"
+                height="1.7rem"
+                color="#525151"
+                onClick={handleSettingsOpen}
+                style={{ cursor: "pointer" }}
+              />
+              <Icon
+                icon="mdi-light:plus-box"
+                width="1.7rem"
+                height="1.7rem"
+                style={{ cursor: "pointer" }}
+              />
               <Icon
                 icon="hugeicons:notification-01"
                 width="1.7rem"
                 height="1.7rem"
               />
 
-              {/* User profile and dropdown */}
               <Box
                 sx={{
                   display: "flex",
@@ -149,6 +181,25 @@ function AppNavbar() {
                   <Typography>Log Out</Typography>
                 </MenuItem>
               </Menu>
+
+              {/* Role Popover */}
+              <Popover
+                open={roleOpen}
+                anchorEl={roleAnchorEl}
+                onClose={handleRoleClose}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <List>
+                  {["Patient", "Pharmacy", "Admin"].map((role) => (
+                    <Button key={role} onClick={() => handleNavigate(role)}>
+                      {role}
+                    </Button>
+                  ))}
+                </List>
+              </Popover>
             </Box>
           </Box>
         </Toolbar>
