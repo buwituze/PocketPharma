@@ -86,13 +86,13 @@ export default function Landingpage() {
                 component="h5"
                 sx={{ marginBottom: "1rem" }}
               >
-                What is PocketPharma?
+                What is Pocket Pharma?
               </Typography>
               <Typography variant="body1" component="p">
                 PocketPharma is a user-friendly platform designed to provide
                 quick and easy access to pharmaceutical information and
                 services. Whether you need to search for medications, learn
-                about their uses and side effects, or find nearby pharmacies,
+                about their side effects, or find nearby pharmacies,
                 PocketPharma empowers you to manage your health confidently and
                 conveniently.
               </Typography>
