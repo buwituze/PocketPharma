@@ -24,7 +24,7 @@ function Navbar() {
           <Box sx={{ display: "flex", alignItems: "center", gap: "300px" }}>
             <Box
               sx={{
-                paddingTop: "5px",
+                paddingTop: "4px",
               }}
             >
               <img
