@@ -12,13 +12,13 @@ const PORT = process.env.PORT || 4000;
 async function startServer(): Promise<void> {
   try {
     await AppDataSource.initialize();
-    console.log("Database connected!");
+    console.log("Database connected");
 
     const app: Application = express();
 
     app.use(
       cors({
-        origin: "https://pocket-pharma.netlify.app/",
+        origin: "https://pocket-pharma.netlify.app",
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type"],
         credentials: true,
