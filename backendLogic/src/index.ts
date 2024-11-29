@@ -18,7 +18,7 @@ async function startServer(): Promise<void> {
 
     app.use(
       cors({
-        origin: "http://localhost:5173",
+        origin: "https://pocket-pharma.netlify.app/",
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type"],
         credentials: true,
@@ -34,7 +34,6 @@ async function startServer(): Promise<void> {
       ],
       introspection: true,
       context: ({ req }) => {
-
         return { request: req };
       },
     });
@@ -45,9 +44,11 @@ async function startServer(): Promise<void> {
       cors: false,
     });
 
-    app.listen(PORT, () => {
+    app.listen(Number(PORT), '0.0.0.0', () => {
       console.log(`Server running at http://localhost:${PORT}/graphql`);
+      console.log(`Accessible externally via ngrok on port ${PORT}`);
     });
+    
   } catch (error) {
     console.error("Failed to start server:", (error as Error).message);
   }

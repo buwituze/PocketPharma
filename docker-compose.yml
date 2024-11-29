@@ -10,6 +10,8 @@ services:
       - ./backendLogic:/app
     depends_on:
       - db
+    networks:
+      - pocketpharma-network
 
   db:
     image: postgres:15
@@ -23,6 +25,8 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - pocketpharma-network
 
   frontend:
     build:
@@ -36,6 +40,12 @@ services:
     tty: true
     depends_on:
       - backend
+    networks:
+      - pocketpharma-network
 
 volumes:
   db-data:
+
+networks:
+  pocketpharma-network:
+    driver: bridge

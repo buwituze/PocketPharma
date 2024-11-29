@@ -3,11 +3,10 @@ import { createRoot } from "react-dom/client";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import App from "./App.tsx";
 
-// Set up Apollo Client with your GraphQL endpoint
 const client = new ApolloClient({
-  uri: "http://localhost:4000/graphql", // Replace with your actual endpoint
+  uri: "https://162a-2c0f-fe30-43db-0-657f-a412-4317-d768.ngrok-free.app/graphql",
   cache: new InMemoryCache(),
-  credentials: "include", // Optional, depending on your needs
+  credentials: "include",
 });
 
 createRoot(document.getElementById("root")!).render(
